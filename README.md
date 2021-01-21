@@ -9,6 +9,8 @@ Be sure to find and replace the following things IN THIS ORDER from the txt
  The RT German newsletter text replaced with a single space (may work better on
  Mac):
  Sie erhalten eine E-Mail, in der Sie Ihre Anmeldung bestätigen müssen.
+ It can also look like this because of the month replacement:
+ Sie erhalten eine E-5l, in der Sie Ihre Anmeldung bestätigen müssen.
  
  Replace en dash – with single space.
  

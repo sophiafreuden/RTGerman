@@ -32,7 +32,7 @@ col_types = cols(
   URL = col_character()
 )
 
-data <- read_delim("RT_ger.txt", delim = "*", col_types = col_types)
+data <- read_delim("mcfaul.txt", delim = "*", col_types = col_types)
 
 data <- data %>%
   mutate(date = dmy(date))
@@ -71,7 +71,10 @@ sums <- as.data.frame(colSums(as.matrix(nDTM)))
 sums <- rownames_to_column(sums)
 colnames(sums) <- c("word", "count")
 sums <- arrange(sums, desc(count))
-head <- sums[1:75,]
+# view(sums)
+sums <- sums[-1,] # The German drop words in the tm package are kinda B-, so I lopped off
+head <- sums[1:75,] # the first row here, which often had "dass" ("that") at a count of 700+.
+# I don't want that in my wordclouds. Comment out/edit this row deletion as needed.
 
 # view(head)
 
@@ -87,13 +90,13 @@ sums2$ArtDate <- data$date
 ```{r}
 sums2 %>%
   group_by(ArtDate) %>% 
-  summarise(Frequency = sum(jahr)) %>%
+  summarise(Frequency = sum(mcfaul)) %>%
   ggplot(aes(x = ArtDate, y = Frequency)) +
   geom_point() +
   geom_smooth(method = 'loess') +
   labs(
     title = "Term Frequency Per Article Over Time",
-    subtitle = "Term: 'jahr' (year), RT Search Term: 'mango' (mango)",
+    subtitle = "Term: 'mcfaul,' RT Search Term: 'mcfaul'",
     x = "Date",
     y = "Frequency"
     # Comment/uncomment caption as neeed
@@ -101,16 +104,18 @@ sums2 %>%
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("plot1.png", width = 7)
+  ggsave("clinton/syrien.png", width = 7)
 ```
 
 ```{r}
-wordcloud(words = head$word, freq = head$count, min.freq = 40,
+wordcloud(words = head$word, freq = head$count, min.freq = 100,
   max.words=100, random.order=FALSE, rot.per=0.35, 
   colors=brewer.pal(8, "Dark2"))
 ```
 
 ```{r}
+# With this and the code chunk below, you'll get some parsing errors. These are just the NAs in the alts column. Because we don't use the alts column for anything here, it doesn't really matter.
+
 col_types2 <- cols(
   word = col_character(),
   score = col_number(),
@@ -156,7 +161,7 @@ ger_sentiment <- sums %>%
   inner_join(gerdict, by = "word") %>%
   select(-(alts))
 
-view(ger_sentiment)
+# view(ger_sentiment)
 
 ger_sentiment <- ger_sentiment %>% 
   mutate(mult = (count * score)) # So this just fundamentally differs from the RTEnglish file in its methodology. It's important to multiply the terms by the frequency, so then we get a true average for the RT German search term.
@@ -171,7 +176,7 @@ multsum2 %>%
   gt() %>%
   tab_header(
     title = "Sentiment Polarization Summary",
-    subtitle = "RT Search Term: 'макфол клинтон' (mcfaul clinton)"
+    subtitle = "RT Search Term: 'mcfaul'"
     )  %>% 
   tab_source_note(
     source_note = "Note special methodology for German sentiment analysis."
@@ -205,7 +210,7 @@ ggplot(sent2, aes(x = emotion, y = count, fill = emotion)) +
   labs(title = "Emotion Analysis",
        x = "Emotion",
        y = "Total Count",
-       subtitle = "RT Search Term: 'soros open society' (ENGLISH TRANSL)"
+       subtitle = "RT Search Term: 'mcfaul'"
        ) +
   scale_fill_brewer(palette="Paired") +
   ggsave("emo1.png", width = 10)
