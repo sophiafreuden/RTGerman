@@ -10,6 +10,207 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r}
-
+library(tm)
+library(SentimentAnalysis)
+library(syuzhet)
+library(SnowballC)
+library(wordcloud)
+library(RColorBrewer)
+library(RCurl)
+library(corpus)
+library(textclean)
+library(lubridate)
+library(gt)
+library(tidyverse)
 ```
+
+```{r}
+col_types = cols(
+  date = col_character(),
+  title = col_character(),
+  content = col_character(),
+  URL = col_character()
+)
+
+data <- read_delim("RT_ger.txt", delim = "*", col_types = col_types)
+
+data <- data %>%
+  mutate(date = dmy(date))
+
+# view(data)
+```
+
+```{r}
+corpus <- SimpleCorpus(VectorSource(data$content))
+```
+
+```{r}
+corpus <- tm_map(corpus, stripWhitespace)
+
+corpus <- tm_map(corpus, content_transformer(tolower))
+
+corpus <- tm_map(corpus, removeNumbers)
+
+corpus <- tm_map(corpus, removePunctuation)
+
+corpus <- tm_map(corpus, removeWords, stopwords("german"))
+```
+
+```{r}
+nonstem.corpus <- corpus
+```
+
+```{r}
+nDTM <- DocumentTermMatrix(nonstem.corpus)
+# inspect(nDTM)
+# view(nDTM)
+```
+
+```{r}
+sums <- as.data.frame(colSums(as.matrix(nDTM)))
+sums <- rownames_to_column(sums)
+colnames(sums) <- c("word", "count")
+sums <- arrange(sums, desc(count))
+head <- sums[1:75,]
+
+# view(head)
+
+sums2 <- as.data.frame(as.matrix(nDTM))
+sums2$ArtDate <- data$date
+# view(sums2)
+# Similar to the issues with stemming words in RTRussian, the resources available for stemming German make it difficult to incorporate here.
+
+# You will often see English/non-German words copied into the article content. I've decided
+# to leave those as is.
+```
+
+```{r}
+sums2 %>%
+  group_by(ArtDate) %>% 
+  summarise(Frequency = sum(jahr)) %>%
+  ggplot(aes(x = ArtDate, y = Frequency)) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  labs(
+    title = "Term Frequency Per Article Over Time",
+    subtitle = "Term: 'jahr' (year), RT Search Term: 'mango' (mango)",
+    x = "Date",
+    y = "Frequency"
+    # Comment/uncomment caption as neeed
+    # caption = "Declined terms combined."
+  ) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggsave("plot1.png", width = 7)
+```
+
+```{r}
+wordcloud(words = head$word, freq = head$count, min.freq = 40,
+  max.words=100, random.order=FALSE, rot.per=0.35, 
+  colors=brewer.pal(8, "Dark2"))
+```
+
+```{r}
+col_types2 <- cols(
+  word = col_character(),
+  score = col_number(),
+  alts = col_character()
+)
+
+gerdictpos <- read_delim("germpos.txt", delim = "\t", col_types = col_types2)
+
+col1 <- gerdictpos$word
+
+col2 <- tolower(col1)
+
+# view(col2)
+
+gerdictpos$word <- col2
+
+# view(gerdictpos)
+```
+
+```{r}
+gerdictneg <- read_delim("germneg.txt", delim = "\t", col_types = col_types2)
+
+col3 <- gerdictneg$word
+
+col4 <- tolower(col3)
+
+# view(col4)
+
+gerdictneg$word <- col4
+
+# view(gerdictneg)
+```
+
+```{r}
+# This creates a single sentiment dictionary with all core terms in lower case.
+gerdict <- bind_rows(gerdictpos, gerdictneg)
+# view(gerdict)
+```
+
+
+```{r}
+ger_sentiment <- sums %>% 
+  inner_join(gerdict, by = "word") %>%
+  select(-(alts))
+
+view(ger_sentiment)
+
+ger_sentiment <- ger_sentiment %>% 
+  mutate(mult = (count * score)) # So this just fundamentally differs from the RTEnglish file in its methodology. It's important to multiply the terms by the frequency, so then we get a true average for the RT German search term.
+
+multsum <- tibble(summary(ger_sentiment$mult))
+
+multsum2 <- as.data.frame(t(multsum))
+```
+
+```{r}
+multsum2 %>%
+  gt() %>%
+  tab_header(
+    title = "Sentiment Polarization Summary",
+    subtitle = "RT Search Term: 'макфол клинтон' (mcfaul clinton)"
+    )  %>% 
+  tab_source_note(
+    source_note = "Note special methodology for German sentiment analysis."
+     ) %>% 
+  cols_label(
+    V1 = "Min.",
+    V2 = "1st Qu.",
+    V3 = "Median",
+    V4 = "Mean",
+    V5 = "3rd Qu.",
+    V6 = "Max."
+    ) %>% 
+  gtsave("table1.png", zoom = 2.5, expand = 10)
+```
+
+```{r}
+sent <- get_nrc_sentiment(data$content, language = "german")
+
+sent2 <- as.data.frame(colSums(sent))
+
+sent2 <- rownames_to_column(sent2)
+
+colnames(sent2) <- c("emotion", "count")
+```
+
+```{r}
+ggplot(sent2, aes(x = emotion, y = count, fill = emotion)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  theme(legend.position="none", panel.grid.major = element_blank()) +
+  labs(title = "Emotion Analysis",
+       x = "Emotion",
+       y = "Total Count",
+       subtitle = "RT Search Term: 'soros open society' (ENGLISH TRANSL)"
+       ) +
+  scale_fill_brewer(palette="Paired") +
+  ggsave("emo1.png", width = 10)
+```
+
+
+
 
