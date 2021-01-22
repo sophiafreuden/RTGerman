@@ -58,6 +58,10 @@ u <- unique(all_data$URL)
 # u is a character vector length 522; raw all_data length 549.
 ```
 
+```{r}
+# Soros: 149; Clinton: 392; McFaul: 8.
+```
+
 
 
 
