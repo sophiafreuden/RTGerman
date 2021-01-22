@@ -90,13 +90,13 @@ sums2$ArtDate <- data$date
 ```{r}
 sums2 %>%
   group_by(ArtDate) %>% 
-  summarise(Frequency = sum(mcfaul)) %>%
+  summarise(Frequency = sum(parubij)) %>%
   ggplot(aes(x = ArtDate, y = Frequency)) +
   geom_point() +
   geom_smooth(method = 'loess') +
   labs(
     title = "Term Frequency Per Article Over Time",
-    subtitle = "Term: 'mcfaul,' RT Search Term: 'mcfaul'",
+    subtitle = "Term: 'parubij' (parubiy), RT Search Term: 'mcfaul'",
     x = "Date",
     y = "Frequency"
     # Comment/uncomment caption as neeed
@@ -104,12 +104,12 @@ sums2 %>%
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("clinton/syrien.png", width = 7)
+  ggsave("mcfaul/parubij.png", width = 7)
 ```
 
 ```{r}
 wordcloud(words = head$word, freq = head$count, min.freq = 100,
-  max.words=100, random.order=FALSE, rot.per=0.35, 
+  max.words=45, random.order=FALSE, rot.per=0.35, 
   colors=brewer.pal(8, "Dark2"))
 ```
 
