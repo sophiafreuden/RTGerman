@@ -1,0 +1,66 @@
+---
+title: "DataComp"
+author: "Sophia Freuden"
+date: "1/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# The purpose of this rmd is to determine how many unique RT German stories I scraped.
+```
+
+```{r}
+library(lubridate)
+library(tidyverse)
+```
+
+```{r}
+col_types = cols(
+  date = col_character(),
+  title = col_character(),
+  content = col_character(),
+  URL = col_character()
+)
+```
+
+```{r}
+data1 <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
+
+data1 <- data1 %>%
+  mutate(date = dmy(date))
+```
+
+```{r}
+data2 <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
+
+data2 <- data2 %>%
+  mutate(date = dmy(date))
+```
+
+```{r}
+data3 <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
+
+data3 <- data3 %>%
+  mutate(date = dmy(date))
+```
+
+```{r}
+data1_2 <- bind_rows(data1, data2)
+```
+
+```{r}
+all_data <- bind_rows(data1_2, data3)
+```
+
+```{r}
+u <- unique(all_data$URL)
+# u is a character vector length 522; raw all_data length 549.
+```
+
+
+
+
+
+
+
