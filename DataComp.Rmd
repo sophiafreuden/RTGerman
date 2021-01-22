@@ -62,6 +62,12 @@ u <- unique(all_data$URL)
 # Soros: 149; Clinton: 392; McFaul: 8.
 ```
 
+```{r}
+# Search terms too small/big to process:
+# Too small:
+# soros clinton mcfaul: 1
+```
+
 
 
 
