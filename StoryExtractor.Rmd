@@ -1,0 +1,83 @@
+---
+title: "StoryExtractor"
+author: "Sophia Freuden"
+date: "1/24/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+library(tm)
+library(SnowballC)
+library(corpus)
+library(textclean)
+library(lubridate)
+library(tidyverse)
+
+# See code chunk titled "extractor" on how to pull a specific story from an RT search term by internal term (i.e. look for story with most hits for "russland" within search term "soros").
+```
+
+```{r}
+col_types = cols(
+  date = col_character(),
+  title = col_character(),
+  content = col_character(),
+  URL = col_character()
+)
+
+# Select which txt you want read in here. Comment out others as needed.
+
+data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
+# data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
+# data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
+
+data <- data %>%
+  mutate(date = dmy(date))
+
+corpus <- SimpleCorpus(VectorSource(data$content))
+
+corpus <- tm_map(corpus, stripWhitespace)
+corpus <- tm_map(corpus, content_transformer(tolower))
+corpus <- tm_map(corpus, removeNumbers)
+corpus <- tm_map(corpus, removePunctuation)
+corpus <- tm_map(corpus, removeWords, stopwords("german"))
+
+nonstem.corpus <- corpus
+nDTM <- DocumentTermMatrix(nonstem.corpus)
+
+sums2 <- as.data.frame(as.matrix(nDTM))
+sums2$ArtDate <- data$date
+```
+
+```{r extractor}
+# This code chunk will select a date and term from the non-stemmed DTM that you can view
+# and find the URL for.
+temp <- sums2 %>% select(c(ArtDate, russland))
+view(temp)
+print(data$URL[12])
+```
+
+```{r}
+sums2 %>%
+  group_by(ArtDate) %>% 
+  summarise(Frequency = sum(proteste)) %>%
+  ggplot(aes(x = ArtDate, y = Frequency)) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  labs(
+    title = "Term Frequency Per Article Over Time",
+    subtitle = "Term: 'proteste' (protests), RT Search Term: 'soros'",
+    x = "Date",
+    y = "Frequency"
+    # Comment/uncomment caption as neeed
+    # caption = "Declined terms combined."
+  ) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggsave("soros/proteste.png", width = 7)
+```
+
+
