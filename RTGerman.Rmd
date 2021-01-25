@@ -32,7 +32,7 @@ col_types = cols(
   URL = col_character()
 )
 
-data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
+data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
 
 data <- data %>%
   mutate(date = dmy(date))
@@ -96,7 +96,7 @@ sums2 %>%
   geom_smooth(method = 'loess') +
   labs(
     title = "Term Frequency Per Article Over Time",
-    subtitle = "Term: 'proteste' (protests), RT Search Term: 'clinton'",
+    subtitle = "Term: 'proteste' (protests), RT Search Term: 'soros'",
     x = "Date",
     y = "Frequency"
     # Comment/uncomment caption as neeed
@@ -104,7 +104,7 @@ sums2 %>%
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("clinton/proteste.png", width = 7)
+  ggsave("soros/proteste.png", width = 7)
 ```
 
 ```{r}
