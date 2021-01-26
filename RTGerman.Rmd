@@ -108,8 +108,8 @@ sums2 %>%
 ```
 
 ```{r}
-wordcloud(words = head$word, freq = head$count, min.freq = 100,
-  max.words=45, random.order=FALSE, rot.per=0.35, 
+wordcloud(words = head$word, freq = head$count, min.freq = 50,
+  max.words=100, random.order=FALSE, rot.per=0.35, 
   colors=brewer.pal(8, "Dark2"))
 ```
 
