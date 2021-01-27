@@ -32,9 +32,11 @@ col_types = cols(
   URL = col_character()
 )
 
+# Select which file you want read and comment the other two out.
+
 # data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
-data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
-# data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
+# data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
+data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
 
 data <- data %>%
   mutate(date = dmy(date))
@@ -94,13 +96,13 @@ sums2$ArtDate <- data$date
 
 sums2 %>%
   group_by(ArtDate) %>% 
-  summarise(Frequency = sum(ausländischen)) %>%
+  summarise(Frequency = sum(orangerevolution)) %>%
   ggplot(aes(x = ArtDate, y = Frequency)) +
   geom_point() +
   geom_smooth(method = 'loess') +
   labs(
     title = "Term Frequency Per Article Over Time",
-    subtitle = "Term: 'ausländischen' (foreign), RT Search Term: 'mcfaul'",
+    subtitle = "Term: 'orangerevolution', RT Search Term: 'soros'",
     x = "Date",
     y = "Frequency"
     # Comment/uncomment caption as neeed
@@ -108,7 +110,7 @@ sums2 %>%
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("mcfaul/ausländischen.png", width = 7)
+  ggsave("soros/orangerevolution.png", width = 7)
 ```
 
 ```{r}
