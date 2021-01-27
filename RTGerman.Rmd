@@ -32,8 +32,8 @@ col_types = cols(
   URL = col_character()
 )
 
-data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
-# data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
+# data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
+data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
 # data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
 
 data <- data %>%
@@ -90,17 +90,17 @@ sums2$ArtDate <- data$date
 ```
 
 ```{r}
-# ä
+# ä ü ö I keep lowercase umlaut letters here because it's easier to copy and paste.
 
 sums2 %>%
   group_by(ArtDate) %>% 
-  summarise(Frequency = sum(zivilgesellschaft)) %>%
+  summarise(Frequency = sum(ausländischen)) %>%
   ggplot(aes(x = ArtDate, y = Frequency)) +
   geom_point() +
   geom_smooth(method = 'loess') +
   labs(
     title = "Term Frequency Per Article Over Time",
-    subtitle = "Term: 'zivilgesellschaft' (civil society), RT Search Term: 'clinton'",
+    subtitle = "Term: 'ausländischen' (foreign), RT Search Term: 'mcfaul'",
     x = "Date",
     y = "Frequency"
     # Comment/uncomment caption as neeed
@@ -108,7 +108,7 @@ sums2 %>%
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("clinton/zivilgesellschaft.png", width = 7)
+  ggsave("mcfaul/ausländischen.png", width = 7)
 ```
 
 ```{r}
