@@ -96,21 +96,21 @@ sums2$ArtDate <- data$date
 
 sums2 %>%
   group_by(ArtDate) %>% 
-  summarise(Frequency = sum(orangerevolution)) %>%
+  summarise(Frequency = sum(demokratischepartei)) %>%
   ggplot(aes(x = ArtDate, y = Frequency)) +
   geom_point() +
   geom_smooth(method = 'loess') +
   labs(
     title = "Term Frequency Per Article Over Time",
-    subtitle = "Term: 'orangerevolution', RT Search Term: 'soros'",
+    subtitle = "Term: 'demokratischepartei' (democraticparty), RT Search Term: 'soros'",
     x = "Date",
-    y = "Frequency"
+    y = "Frequency",
     # Comment/uncomment caption as neeed
-    # caption = "Declined terms combined."
+    caption = "Declined terms combined."
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("soros/orangerevolution.png", width = 7)
+  ggsave("soros/demokratischepartei.png", width = 7)
 ```
 
 ```{r}
