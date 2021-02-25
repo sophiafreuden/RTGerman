@@ -30,8 +30,8 @@ col_types = cols(
 
 # Select which txt you want read in here. Comment out others as needed.
 
-data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
-# data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
+# data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
+data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
 # data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
 
 data <- data %>%
@@ -55,7 +55,7 @@ sums2$ArtDate <- data$date
 ```{r extractor}
 # This code chunk will select a date and term from the non-stemmed DTM that you can view
 # and find the URL for.
-temp <- sums2 %>% select(c(ArtDate, russland))
+temp <- sums2 %>% select(c(ArtDate, mcfaul))
 view(temp)
 print(data$URL[12])
 ```
