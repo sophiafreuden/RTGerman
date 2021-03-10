@@ -35,8 +35,8 @@ col_types = cols(
 # Select which file you want read and comment the other two out.
 
 # data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
-# data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
-data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
+data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
+# data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
 
 data <- data %>%
   mutate(date = dmy(date))
@@ -96,21 +96,21 @@ sums2$ArtDate <- data$date
 
 sums2 %>%
   group_by(ArtDate) %>% 
-  summarise(Frequency = sum(demokratischepartei)) %>%
+  summarise(Frequency = sum(mcfaul)) %>%
   ggplot(aes(x = ArtDate, y = Frequency)) +
   geom_point() +
   geom_smooth(method = 'loess') +
   labs(
     title = "Term Frequency Per Article Over Time",
-    subtitle = "Term: 'demokratischepartei' (democraticparty), RT Search Term: 'soros'",
+    subtitle = "Term: 'mcfaul', RT Search Term: 'mcfaul'",
     x = "Date",
-    y = "Frequency",
+    y = "Frequency"
     # Comment/uncomment caption as neeed
-    caption = "Declined terms combined."
+    # caption = "Declined terms combined."
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("soros/demokratischepartei.png", width = 7)
+  ggsave("mcfaul/mcfaul.png", width = 10)
 ```
 
 ```{r}
@@ -159,15 +159,16 @@ gerdictneg$word <- col4
 # This creates a single sentiment dictionary with all core terms in lower case.
 gerdict <- bind_rows(gerdictpos, gerdictneg)
 # view(gerdict)
+gerdict <- gerdict %>% select(-(alts))
 ```
 
 
 ```{r}
 ger_sentiment <- sums %>% 
-  inner_join(gerdict, by = "word") %>%
-  select(-(alts))
+  inner_join(gerdict, by = "word") # %>%
+  # select(-(alts))
 
-# view(ger_sentiment)
+view(ger_sentiment$score)
 
 ger_sentiment <- ger_sentiment %>% 
   mutate(mult = (count * score)) # So this just fundamentally differs from the RTEnglish file in its methodology. It's important to multiply the terms by the frequency, so then we get a true average for the RT German search term.
@@ -194,7 +195,7 @@ multsum2 %>%
     V4 = "Mean",
     V5 = "3rd Qu.",
     V6 = "Max."
-    ) %>% 
+    ) %>%
   gtsave("table1.png", zoom = 2.5, expand = 10)
 ```
 

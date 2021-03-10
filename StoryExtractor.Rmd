@@ -30,9 +30,9 @@ col_types = cols(
 
 # Select which txt you want read in here. Comment out others as needed.
 
-# data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
+data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
 # data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
-data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
+# data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
 
 data <- data %>%
   mutate(date = dmy(date))
@@ -50,25 +50,32 @@ nDTM <- DocumentTermMatrix(nonstem.corpus)
 
 sums2 <- as.data.frame(as.matrix(nDTM))
 sums2$ArtDate <- data$date
+sums2$URL <- data$URL
 ```
 
 ```{r extractor}
 # This code chunk will select a date and term from the non-stemmed DTM that you can view
 # and find the URL for.
-temp <- sums2 %>% select(c(ArtDate, soros))
+temp <- sums2 %>% select(c(ArtDate, clinton, URL))
+temp <- unique(temp)
 view(temp)
-print(data$URL[10]) # 17
-print(data$URL[39]) # 14
-print(data$URL[48]) # 13
-print(data$URL[126]) # 12
-print(data$URL[97]) # 11
-print(data$URL[99]) # 11
-print(data$URL[134]) # 11
-print(data$URL[54]) # 10
-print(data$URL[88]) # 10
-print(data$URL[82]) # 9
 
-# sum: 382; sample: 118 .3089
+temp <- temp %>% arrange(desc(clinton))
+head1 <- head(temp, 10)
+view(head1)
+
+print(head1$URL[1])
+print(head1$URL[2])
+print(head1$URL[3])
+print(head1$URL[4])
+print(head1$URL[5])
+print(head1$URL[6])
+print(head1$URL[7])
+print(head1$URL[8])
+print(head1$URL[9])
+print(head1$URL[10])
+
+# sum: 616; sample: 115 .1867
 ```
 
 ```{r}
