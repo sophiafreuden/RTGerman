@@ -34,8 +34,8 @@ col_types = cols(
 
 # Select which file you want read and comment the other two out.
 
-# data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
-data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
+data <- read_delim("clinton/clinton.txt", delim = "*", col_types = col_types)
+# data <- read_delim("mcfaul/mcfaul.txt", delim = "*", col_types = col_types)
 # data <- read_delim("soros/soros.txt", delim = "*", col_types = col_types)
 
 data <- data %>%
@@ -84,6 +84,8 @@ head <- sums[1:75,] # off the first row here, which often had "dass" ("that") at
 
 sums2 <- as.data.frame(as.matrix(nDTM))
 sums2$ArtDate <- data$date
+sums2$URL <-data$URL
+sums2 <- unique(sums2)
 # view(sums2)
 # Similar to the issues with stemming words in RTRussian, the resources available for stemming German make it difficult to incorporate here.
 
@@ -96,13 +98,13 @@ sums2$ArtDate <- data$date
 
 sums2 %>%
   group_by(ArtDate) %>% 
-  summarise(Frequency = sum(mcfaul)) %>%
+  summarise(Frequency = sum(clinton)) %>%
   ggplot(aes(x = ArtDate, y = Frequency)) +
   geom_point() +
-  geom_smooth(method = 'loess') +
+  # geom_smooth(method = 'loess') +
   labs(
     title = "Term Frequency Per Article Over Time",
-    subtitle = "Term: 'mcfaul', RT Search Term: 'mcfaul'",
+    subtitle = "Term: 'clinton', RT Search Term: 'clinton'",
     x = "Date",
     y = "Frequency"
     # Comment/uncomment caption as neeed
@@ -110,7 +112,7 @@ sums2 %>%
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("mcfaul/mcfaul.png", width = 10)
+  ggsave("clinton/clinton.png", width = 10)
 ```
 
 ```{r}
