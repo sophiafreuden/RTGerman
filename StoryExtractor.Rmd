@@ -61,7 +61,7 @@ temp <- unique(temp)
 view(temp)
 
 temp <- temp %>% arrange(desc(clinton))
-head1 <- head(temp, 10)
+head1 <- head(temp, 15)
 view(head1)
 
 print(head1$URL[1])
@@ -74,6 +74,7 @@ print(head1$URL[7])
 print(head1$URL[8])
 print(head1$URL[9])
 print(head1$URL[10])
+print(head1$URL[11])
 
 # sum: 616; sample: 115 .1867
 ```
